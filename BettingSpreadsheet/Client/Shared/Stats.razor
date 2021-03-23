@@ -1,0 +1,53 @@
+﻿<MudGrid>
+    <MudItem xs="6">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6"><MudAvatar Size="Size.Large" Color="Color.Primary" Class="ma-2">A</MudAvatar>Hi, Benji</MudText>
+                </CardHeaderContent>
+                @*<CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                    </CardHeaderActions>*@
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>This day everything happend.</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="6">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Stats</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                    <MudTabPanel Text="Overall">
+                        <MudText>Overall</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="This week">
+                        <MudText>This week</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Last week">
+                        <MudText>Last week</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="This month">
+                        <MudText>This month</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Last month">
+                        <MudText>Last month</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Year To Date">
+                        <MudText>Year To Date</MudText>
+                    </MudTabPanel>
+                </MudTabs>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+}

@@ -1,0 +1,68 @@
+﻿@inject IBetService BetService
+@inject IDialogService DialogService
+@namespace BettingSpreadsheet.Shared
+
+@if (Bets == null || Bets.Count == 0)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="@Bets" Hover="true" Dense="true" Style="overflow-x: auto;" FixedHeader="true">
+        <HeaderContent>
+            <MudTh>Date</MudTh>
+            <MudTh>Match Time</MudTh>
+            <MudTh>Match</MudTh>
+            <MudTh>Selection</MudTh>
+            <MudTh>League</MudTh>
+            <MudTh>Stake</MudTh>
+            <MudTh>Odds</MudTh>
+            <MudTh>Tipster</MudTh>
+            <MudTh>Bookie</MudTh>
+            <MudTh>Sport</MudTh>
+            <MudTh>Locked?</MudTh>
+            <MudTh>Delete</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Date">@context.MatchDate</MudTd>
+            <MudTd DataLabel="Date">@context.MatchTime</MudTd>
+            <MudTd DataLabel="Match">@context.Match</MudTd>
+            <MudTd DataLabel="Selection">@context.Selection</MudTd>
+            <MudTd DataLabel="League">@context.League</MudTd>
+            <MudTd DataLabel="Stake">@context.Stake</MudTd>
+            <MudTd DataLabel="Odds">@context.Odds</MudTd>
+            <MudTd DataLabel="Tipster">@context.Tipster</MudTd>
+            <MudTd DataLabel="Bookie">@context.Bookie</MudTd>
+            <MudTd DataLabel="Sport">@context.Sport</MudTd>
+            @if (context.Locked)
+                {
+                <MudTd DataLabel="Locked?"><span class="oi oi-lock-locked"></span></MudTd>
+                }
+                else
+                {
+                <MudTd DataLabel="Locked?"><span class="oi oi-lock-unlocked"></span></MudTd>
+                }
+            <MudTd DataLabel="Delete"><MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteBet">Delete</MudButton></MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{ 20, 50, 100 }" />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private List<Bet> Bets = new List<Bet>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Bets = await BetService.LoadBetsAsync();
+    }
+
+    private async void DeleteBet()
+    {
+        @*Have to build in some logic to delete bet through API I guess..*@
+        bool? result = await DialogService.ShowMessageBox("Warning", "Deleting bets can't be undone!", yesText: "Delete bet", cancelText: "Cancel");
+        string state = result == null ? "Cancelled" : "Deleted!";
+        StateHasChanged();
+    }
+}

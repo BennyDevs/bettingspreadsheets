@@ -1,0 +1,174 @@
+﻿@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IBetService BetService
+@inject ISnackbar Snackbar 
+@namespace BettingSpreadsheet.Shared
+
+<EditForm Model="newBet" OnValidSubmit="AddNewBet">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="3">
+            <MudAutocomplete T="string" Label="Match" @bind-Value="newBet.Match" SearchFunc="@SearchMatches" ResetValueOnEmptyText="true" CoerceText="false" For="(() => newBet.Match)" />
+        </MudItem>
+        <MudItem xs="3">
+            <MudAutocomplete T="string" Label="Selection" @bind-Value="newBet.Selection" SearchFunc="@SearchSelections" ResetValueOnEmptyText="true" For="(() => newBet.Selection)" />
+        </MudItem>
+        <MudItem xs="3">
+            <MudAutocomplete T="string" Label="League" @bind-Value="newBet.League" SearchFunc="@SearchLeagues" ResetValueOnEmptyText="true" />
+        </MudItem>
+        <MudItem xs="2">
+            <MudDatePicker Label="Date" @bind-Date="newBet.MatchDate" DateFormat="dd/MM/yyyy" />
+        </MudItem>
+        <MudItem xs="2">
+            <MudTimePicker Label="Clock" @bind-Time="newBet.MatchTime" />
+        </MudItem>
+        <MudItem xs="1">
+            <MudTextField T="double" Label="Stake" @bind-Value="newBet.Stake" For="@(() => newBet.Stake)" />
+        </MudItem>
+        <MudItem xs="1">
+            <MudTextField T="double" Label="Odds" @bind-Value="newBet.Odds" For="@(() => newBet.Odds)" />
+        </MudItem>
+        <MudItem xs="3">
+            <MudAutocomplete T="string" Label="Bookie" @bind-Value="newBet.Bookie" SearchFunc="@SearchBookies" ResetValueOnEmptyText="true" />
+        </MudItem>
+        <MudItem xs="3">
+            <MudAutocomplete T="string" Label="Sport" @bind-Value="newBet.Sport" SearchFunc="@SearchSports" ResetValueOnEmptyText="true" />
+        </MudItem>
+        <MudItem xs="2">
+            <MudAutocomplete T="string" Label="Tipster" @bind-Value="newBet.Tipster" SearchFunc="@SearchTipsters" ResetValueOnEmptyText="true" />
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect @bind-Value="@newBet.State" Label="Status">
+                <MudSelectItem Value="@("New")" />
+                <MudSelectItem Value="@("Won")" />
+                <MudSelectItem Value="@("Half Won")" />
+                <MudSelectItem Value="@("Push")" />
+                <MudSelectItem Value="@("Void")" />
+                <MudSelectItem Value="@("Half Lost")" />
+                <MudSelectItem Value="@("Lost")" />
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudRadioGroup @bind-SelectedOption="@newBet.Locked">
+                <MudRadio T="bool" Option="@true" Color="Color.Primary"><span class="oi oi-lock-locked"></span></MudRadio>
+                <MudRadio T="bool" Option="@false" Color="Color.Primary"><span class="oi oi-lock-unlocked"></span></MudRadio>
+            </MudRadioGroup>
+        </MudItem>
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Class="mb-6 ml-3" @onclick="@(() => Snackbar.Add($"A new bet was added! Selection: {newBet.Selection} Odds: {newBet.Odds} Stake: {newBet.Stake}", Severity.Success, config => { config.ShowCloseIcon = false; }))">Add Bet</MudButton>
+    </MudGrid>
+</EditForm>
+
+@code {
+    Bet newBet = new Bet();
+
+    private string[] matches =
+    {
+        "Manchester United v Liverpool", "Liverpool v Chelsea", "Tottenham v Arsenal"
+    };
+
+    private string[] selections =
+    {
+        "Manchester United -0.5 (Asian Handicap)", "Liverpool +0 (Asian Handicap)"
+    };
+
+    private string[] leagues =
+    {
+        "Premier League", "Serie A", "Ligue 1"
+    };
+
+    private string[] bookies =
+    {
+        "Norsk-Tipping", "Pinnacle", "Unibet"
+    };
+
+    private string[] sports =
+    {
+        "Football", "Handball", "Bicycling"
+    };
+
+    private string[] tipsters =
+    {
+        "King Bogen", "Sondreg", "WillOKC98"
+    };
+
+    private async Task<IEnumerable<string>> SearchMatches(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return matches;
+        return matches.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchSelections(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return selections;
+        return selections.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchLeagues(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return leagues;
+        return leagues.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchBookies(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return bookies;
+        return bookies.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchSports(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return sports;
+        return sports.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchTipsters(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return tipsters;
+        return tipsters.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task AddNewBet()
+    {
+        Console.WriteLine(newBet.MatchTime);
+        await BetService.CreateNewBet(newBet);
+        StateHasChanged();
+    }
+
+    @*private async Task GetSportEvents()
+        {
+            var response = await Http.GetStringAsync("https://www.thesportsdb.com/api/v1/json/1/eventspastleague.php?id=4328");
+            Console.WriteLine(response);
+        }*@
+
+    @*@onclick="@(async () => await GetSportEvents())"*@
+}
