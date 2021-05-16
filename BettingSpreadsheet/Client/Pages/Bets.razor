@@ -1,25 +1,27 @@
-﻿@inject HttpClient Http
+﻿@inject IBetService BetService
+@inject IDialogService DialogService
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
-@inject IBetService BetService
-@inject ISnackbar Snackbar 
+@inject ISnackbar Snackbar
 @namespace BettingSpreadsheet.Shared
+@attribute [Authorize]
 
 <EditForm Model="newBet" OnValidSubmit="AddNewBet">
     <DataAnnotationsValidator />
     <MudGrid>
-        <MudItem xs="3">
+        <MudItem xs="2">
             <MudAutocomplete T="string" Label="Match" @bind-Value="newBet.Match" SearchFunc="@SearchMatches" ResetValueOnEmptyText="true" CoerceText="false" For="(() => newBet.Match)" />
         </MudItem>
-        <MudItem xs="3">
+        <MudItem xs="2">
             <MudAutocomplete T="string" Label="Selection" @bind-Value="newBet.Selection" SearchFunc="@SearchSelections" ResetValueOnEmptyText="true" For="(() => newBet.Selection)" />
         </MudItem>
-        <MudItem xs="3">
+        <MudItem xs="2">
             <MudAutocomplete T="string" Label="League" @bind-Value="newBet.League" SearchFunc="@SearchLeagues" ResetValueOnEmptyText="true" />
         </MudItem>
-        <MudItem xs="2">
+        <MudItem xs="1">
             <MudDatePicker Label="Date" @bind-Date="newBet.MatchDate" DateFormat="dd/MM/yyyy" />
         </MudItem>
-        <MudItem xs="2">
+        <MudItem xs="1">
             <MudTimePicker Label="Clock" @bind-Time="newBet.MatchTime" />
         </MudItem>
         <MudItem xs="1">
@@ -28,10 +30,10 @@
         <MudItem xs="1">
             <MudTextField T="double" Label="Odds" @bind-Value="newBet.Odds" For="@(() => newBet.Odds)" />
         </MudItem>
-        <MudItem xs="3">
+        <MudItem xs="1">
             <MudAutocomplete T="string" Label="Bookie" @bind-Value="newBet.Bookie" SearchFunc="@SearchBookies" ResetValueOnEmptyText="true" />
         </MudItem>
-        <MudItem xs="3">
+        <MudItem xs="1">
             <MudAutocomplete T="string" Label="Sport" @bind-Value="newBet.Sport" SearchFunc="@SearchSports" ResetValueOnEmptyText="true" />
         </MudItem>
         <MudItem xs="2">
@@ -54,42 +56,119 @@
                 <MudRadio T="bool" Option="@false" Color="Color.Primary"><span class="oi oi-lock-unlocked"></span></MudRadio>
             </MudRadioGroup>
         </MudItem>
-        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Class="mb-6 ml-3" @onclick="@(() => Snackbar.Add($"A new bet was added! Selection: {newBet.Selection} Odds: {newBet.Odds} Stake: {newBet.Stake}", Severity.Success, config => { config.ShowCloseIcon = false; }))">Add Bet</MudButton>
+        <MudItem xs="3">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" Class="mb-6 ml-3">Add Bet</MudButton>
+        </MudItem>
     </MudGrid>
 </EditForm>
 
+
+@if (AllBets == null || AllBets.Count == 0)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+else
+{
+    <MudTable Items="@AllBets" Hover="true" Dense="true" Style="overflow-x: auto;" FixedHeader="true">
+        <HeaderContent>
+            <MudTh>Date</MudTh>
+            <MudTh>Match</MudTh>
+            <MudTh>Selection</MudTh>
+            <MudTh>League</MudTh>
+            <MudTh>Stake</MudTh>
+            <MudTh>Odds</MudTh>
+            <MudTh>Tipster</MudTh>
+            <MudTh>Bookie</MudTh>
+            <MudTh>Sport</MudTh>
+            <MudTh>Locked?</MudTh>
+            <MudTh>Delete</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Date">@context.MatchDate</MudTd>
+            <MudTd DataLabel="Match">@context.Match</MudTd>
+            <MudTd DataLabel="Selection">@context.Selection</MudTd>
+            <MudTd DataLabel="League">@context.League</MudTd>
+            <MudTd DataLabel="Stake">@context.Stake</MudTd>
+            <MudTd DataLabel="Odds">@context.Odds</MudTd>
+            <MudTd DataLabel="Tipster">@context.Tipster</MudTd>
+            <MudTd DataLabel="Bookie">@context.Bookie</MudTd>
+            <MudTd DataLabel="Sport">@context.Sport</MudTd>
+            @if (context.Locked)
+                {
+                <MudTd DataLabel="Locked?"><span class="oi oi-lock-locked"></span></MudTd>
+                }
+                else
+                {
+                <MudTd DataLabel="Locked?"><span class="oi oi-lock-unlocked"></span></MudTd>
+                }
+            <MudTd DataLabel="Delete"><MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="@(() => DeleteBet(context.Id))">Delete</MudButton></MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{ 20, 50, 100 }" />
+        </PagerContent>
+    </MudTable>
+}
+
 @code {
+    public List<Bet> AllBets = new List<Bet>();
     Bet newBet = new Bet();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllBets = await BetService.LoadBetsAsync();
+    }
+
+
+    private async Task DeleteBet(int id)
+    {
+        bool? result = await DialogService.ShowMessageBox("Warning", "Deleting bets can't be undone!", yesText: "Delete bet", cancelText: "Cancel");
+        @*string state = result == null ? "Cancelled" : "Deleted!";*@
+
+        if (result == null)
+        {
+            return;
+        }
+        else
+        {
+            await BetService.DeleteBet(id);
+            AllBets = await BetService.LoadBetsAsync();
+        }
+    }
+
+    @*DateTime datePicker = new DateTime();
+        TimeSpan timePicker = new TimeSpan();*@
+
+    @*Skulle man lagt opp støtte for at MatchTime og MatchDate opprettes i komponentente (frontend) (henter dermed timezone etc. direkte fra webbrowswer?)*@
 
     private string[] matches =
     {
-        "Manchester United v Liverpool", "Liverpool v Chelsea", "Tottenham v Arsenal"
+                    "Manchester United v Liverpool", "Liverpool v Chelsea", "Tottenham v Arsenal"
     };
 
     private string[] selections =
     {
-        "Manchester United -0.5 (Asian Handicap)", "Liverpool +0 (Asian Handicap)"
-    };
+                    "Manchester United -0.5 (Asian Handicap)", "Liverpool +0 (Asian Handicap)"
+                };
 
     private string[] leagues =
     {
-        "Premier League", "Serie A", "Ligue 1"
-    };
+                    "Premier League", "Serie A", "Ligue 1"
+                };
 
     private string[] bookies =
     {
-        "Norsk-Tipping", "Pinnacle", "Unibet"
-    };
+                    "Norsk-Tipping", "Pinnacle", "Unibet"
+                };
 
     private string[] sports =
     {
-        "Football", "Handball", "Bicycling"
-    };
+                    "Football", "Handball", "Bicycling"
+                };
 
     private string[] tipsters =
     {
-        "King Bogen", "Sondreg", "WillOKC98"
-    };
+                    "King Bogen", "Sondreg", "WillOKC98"
+                };
 
     private async Task<IEnumerable<string>> SearchMatches(string value)
     {
@@ -159,16 +238,16 @@
 
     private async Task AddNewBet()
     {
-        Console.WriteLine(newBet.MatchTime);
+        DateTime date = newBet.MatchDate.Value.Date;
+        TimeSpan time = newBet.MatchTime.Value;
+
+        newBet.MatchDate = date + time;
+
         await BetService.CreateNewBet(newBet);
-        StateHasChanged();
+
+        Snackbar.Add($"A new bet was added! Selection: {newBet.Selection} Odds: {newBet.Odds} Stake: {newBet.Stake}", Severity.Success, config => { config.ShowCloseIcon = false; });
+
+        newBet = new Bet();
+        AllBets = await BetService.LoadBetsAsync();
     }
-
-    @*private async Task GetSportEvents()
-        {
-            var response = await Http.GetStringAsync("https://www.thesportsdb.com/api/v1/json/1/eventspastleague.php?id=4328");
-            Console.WriteLine(response);
-        }*@
-
-    @*@onclick="@(async () => await GetSportEvents())"*@
 }

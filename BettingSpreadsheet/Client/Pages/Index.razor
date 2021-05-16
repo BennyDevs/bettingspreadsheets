@@ -3,13 +3,14 @@
 @inject IDialogService DialogService
 @namespace BettingSpreadsheet.Shared
 
-<Stats />
+    <AuthorizeView>
+        <Authorized>
+            <h1>Hi, @context.User.Identity.Name. Welcome back!</h1>
+            <Stats />
 
-<AddBet />
-
-<BetsOverview />
-
-@code {
-    
-
-}
+            <Bets />
+        </Authorized>
+        <NotAuthorized>
+            <Login />
+        </NotAuthorized>
+    </AuthorizeView>

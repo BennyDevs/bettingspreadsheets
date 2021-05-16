@@ -1,0 +1,48 @@
+﻿@namespace BettingSpreadsheet.Shared
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ISnackbar Snackbar
+@inject IAuthService AuthService
+
+<div class="main-body">
+    <h2 class="h2-styling">Log In</h2>
+    <EditForm Model="user" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+
+        <MudCard Class="mb-4">
+            <MudCardContent>
+                <MudForm @bind-IsValid="@success">
+                    <MudTextField T="string" Label="Email" @bind-Value="user.Email" />
+                    <ValidationMessage For="@(() => user.Email)" />
+                    <MudTextField T="string" Label="Password" @bind-Value="user.Password" InputType="InputType.Password" />
+                    <ValidationMessage For="@(() => user.Password)" />
+                </MudForm>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Disabled="(!context.Validate())" Class="btn-login">Login</MudButton>
+            </MudCardActions>
+            <h4>Please log in below or <NavLink href="register">register</NavLink> for a new account.</h4>
+        </MudCard>
+    </EditForm>
+</div>
+
+
+@code {
+    private UserLogin user = new UserLogin();
+    private bool success;
+
+    private async void HandleLogin()
+    {
+        var result = await AuthService.Login(user);
+
+        if (result.Success)
+        {
+            await LocalStorage.SetItemAsync<bool>("isAuthenticated", true);
+            await AuthStateProvider.GetAuthenticationStateAsync();
+        }
+        else
+        {
+            Snackbar.Add(result.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+    }
+}

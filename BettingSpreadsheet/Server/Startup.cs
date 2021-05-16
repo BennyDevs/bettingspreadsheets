@@ -26,6 +26,7 @@ namespace BettingSpreadsheet.Server
         {
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IBetService, BetService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddMudServices();
             services.AddControllersWithViews();
             services.AddRazorPages();

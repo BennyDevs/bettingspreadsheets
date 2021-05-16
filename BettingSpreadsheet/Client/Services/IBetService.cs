@@ -10,5 +10,6 @@ namespace BettingSpreadsheet.Client.Services
         List<Bet> Bets { get; set; }
         Task<List<Bet>> LoadBetsAsync();
         Task<Bet> CreateNewBet(Bet bet);
+        Task DeleteBet(int id);
     }
 }

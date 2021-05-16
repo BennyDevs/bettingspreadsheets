@@ -1,9 +1,18 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+:root {
+    /* Dark theme */
+    --background: #121212;
 }
 
+html, body {
+    font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/*.main {
+    background: var(--background);
+}
+*/
 a, .btn-link {
     color: #0366d6;
 }

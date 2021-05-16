@@ -1,4 +1,8 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager 
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">BettingSpreadsheet</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -12,11 +16,27 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="stats">
-                <span class="oi oi-pulse" aria-hidden="true"></span> Stats
-            </NavLink>
-        </li>
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="stats">
+                        <span class="oi oi-pulse" aria-hidden="true"></span> Stats
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <a class="nav-link" @onclick="Logout" style="cursor: pointer">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                    </a>
+                </li>
+            </Authorized>
+            <NotAuthorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="register">
+                        <span class="oi oi-pencil" aria-hidden="true"></span> Register
+                    </NavLink>
+                </li>
+            </NotAuthorized>
+        </AuthorizeView>
     </ul>
 </div>
 
@@ -28,5 +48,12 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async void Logout()
+    {
+        await LocalStorage.RemoveItemAsync("isAuthenticated");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
     }
 }

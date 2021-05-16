@@ -25,6 +25,19 @@ namespace BettingSpreadsheet.Server.Services.BetService
         public async Task AddNewBet(Bet bet)
         {
             _context.Bets.Add(bet);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteBet(int id)
+        {
+            var findBet = await _context.Bets.FirstOrDefaultAsync(b => b.Id == id);
+            if (findBet == null)
+            {
+                return;
+            }
+            _context.Bets.Remove(findBet);
+
             await _context.SaveChangesAsync();
         }
     }

@@ -14,6 +14,7 @@ namespace BettingSpreadsheet.Server.Data
         }
 
         public DbSet<Bet> Bets { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

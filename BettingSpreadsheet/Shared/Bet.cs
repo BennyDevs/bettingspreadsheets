@@ -12,7 +12,7 @@ namespace BettingSpreadsheet.Shared
         public string Selection { get; set; }
         public string League { get; set; }
         public DateTime? MatchDate { get; set; } = DateTimeOffset.Now.Date;
-        public TimeSpan? MatchTime { get; set; } = new TimeSpan(00, 00, 00);
+        public TimeSpan? MatchTime { get; set; } = DateTimeOffset.Now.TimeOfDay;
         [Range(0.01, 100000000, ErrorMessage = "This field is required.")]
         public double Stake { get; set; }
         [Range(0.01, 100000000, ErrorMessage = "This field is required.")]

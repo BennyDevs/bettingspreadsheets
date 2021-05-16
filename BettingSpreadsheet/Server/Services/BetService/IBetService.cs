@@ -9,5 +9,6 @@ namespace BettingSpreadsheet.Server.Services.BetService
     {
         Task<List<Bet>> GetAllBets();
         Task AddNewBet(Bet bet);
+        Task DeleteBet(int id);
     }
 }

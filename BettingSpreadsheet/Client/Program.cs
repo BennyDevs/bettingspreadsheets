@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using BettingSpreadsheet.Client.Services;
 using MudBlazor.Services;
 using MudBlazor;
+using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
 
 namespace BettingSpreadsheet.Client
 {
@@ -18,6 +20,11 @@ namespace BettingSpreadsheet.Client
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<IBetService, BetService>();
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
             builder.Services.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;

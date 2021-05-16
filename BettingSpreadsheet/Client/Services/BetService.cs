@@ -28,5 +28,19 @@ namespace BettingSpreadsheet.Client.Services
             var result = await _http.PostAsJsonAsync("api/Bet", request);
             return await result.Content.ReadFromJsonAsync<Bet>();
         }
+
+        public async Task DeleteBet(int id)
+        {
+            var bets = await _http.GetFromJsonAsync<List<Bet>>($"api/Bet");
+            if (bets == null)
+            {
+                return;
+            }
+
+            var betItem = bets.Find(x => x.Id == id);
+
+            var result = await _http.DeleteAsync($"api/Bet/{betItem.Id}");
+            //await result.Content.ReadFromJsonAsync<Bet>();
+        }
     }
 }
